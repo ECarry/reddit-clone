@@ -36,6 +36,7 @@ export default function ProtectedRoutesLayout() {
           ),
         }}
       />
+      <Stack.Screen name="group-selector" options={{ headerShown: false }} />
     </Stack>
   );
 }

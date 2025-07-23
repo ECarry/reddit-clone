@@ -10,12 +10,18 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AntDesign } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { Link, router } from "expo-router";
 import React from "react";
 
 export default function CreateScreen() {
   const [title, setTitle] = React.useState<string>("");
   const [body, setBody] = React.useState<string>("");
+
+  const goBack = () => {
+    setTitle("");
+    setBody("");
+    router.back();
+  };
 
   return (
     <SafeAreaView
@@ -23,12 +29,7 @@ export default function CreateScreen() {
     >
       {/* Header */}
       <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-        <AntDesign
-          name="close"
-          size={30}
-          color="black"
-          onPress={() => router.back()}
-        />
+        <AntDesign name="close" size={30} color="black" onPress={goBack} />
 
         <Pressable
           onPress={() => {}}
@@ -49,10 +50,12 @@ export default function CreateScreen() {
           style={{ paddingHorizontal: 10 }}
         >
           {/* COMMUNITY SELECTOR */}
-          <View style={styles.communityContainer}>
-            <Text style={styles.rStyle}>r/</Text>
-            <Text style={{ fontWeight: "600" }}>Select a community</Text>
-          </View>
+          <Link href="/group-selector" asChild>
+            <Pressable style={styles.communityContainer}>
+              <Text style={styles.rStyle}>r/</Text>
+              <Text style={{ fontWeight: "600" }}>Select a community</Text>
+            </Pressable>
+          </Link>
 
           {/* INPUTS */}
           <TextInput
@@ -94,6 +97,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
     borderRadius: 10,
     fontWeight: "bold",
+    marginRight: 5,
   },
   communityContainer: {
     backgroundColor: "#EDEDED",
