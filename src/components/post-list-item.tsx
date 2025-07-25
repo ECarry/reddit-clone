@@ -83,7 +83,7 @@ export default function PostListItem({
           />
         )}
 
-        {post.description && !post.image && (
+        {post.description && (!post.image || isDetailedPost) && (
           <Text numberOfLines={isDetailedPost ? undefined : 4}>
             {post.description}
           </Text>
