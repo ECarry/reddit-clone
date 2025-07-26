@@ -12,20 +12,25 @@ import posts from "../../../../assets/data/posts.json";
 import comments from "../../../../assets/data/comments.json";
 import PostListItem from "../../../components/post-list-item";
 import CommentListItem from "../../../components/comment-list-item";
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function PostDetailScreen() {
   const { id } = useLocalSearchParams();
   const [comment, setComment] = useState<string>("");
   const [inputFocus, setInputFocus] = useState<boolean>(false);
+  const inputRef = useRef<TextInput | null>(null);
 
+  const insets = useSafeAreaInsets();
   const detailedPost = posts.find((post) => post.id === id);
   const detailedComments = comments.filter((comment) => comment.post_id === id);
 
-  if (!detailedPost) return <Text>Post not found!</Text>;
+  const handleReplyButtonPressed = useCallback((commentId: string) => {
+    console.log(commentId);
+    inputRef.current?.focus();
+  }, []);
 
-  const insets = useSafeAreaInsets();
+  if (!detailedPost) return <Text>Post not found!</Text>;
 
   return (
     <KeyboardAvoidingView
@@ -35,7 +40,13 @@ export default function PostDetailScreen() {
     >
       <FlatList
         data={detailedComments}
-        renderItem={({ item }) => <CommentListItem comment={item} />}
+        renderItem={({ item }) => (
+          <CommentListItem
+            comment={item}
+            depth={0}
+            handleReplyButtonPressed={handleReplyButtonPressed}
+          />
+        )}
         ListHeaderComponent={
           <PostListItem post={detailedPost} isDetailedPost />
         }
@@ -68,6 +79,7 @@ export default function PostDetailScreen() {
           multiline
           onFocus={() => setInputFocus(true)}
           onBlur={() => setInputFocus(false)}
+          ref={inputRef}
         />
         {inputFocus && (
           <Pressable

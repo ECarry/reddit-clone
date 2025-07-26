@@ -1,13 +1,22 @@
-import { View, Text, Image, Pressable } from "react-native";
+import { View, Text, Image, Pressable, FlatList } from "react-native";
 import { Entypo, Octicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { formatDistanceToNowStrict } from "date-fns";
 import { Comment } from "../types";
+import { useState, memo } from "react";
 
 type CommentListItemProps = {
   comment: Comment;
+  depth: number;
+  handleReplyButtonPressed: (commentId: string) => void;
 };
 
-const CommentListItem = ({ comment }: CommentListItemProps) => {
+const CommentListItem = ({
+  comment,
+  depth,
+  handleReplyButtonPressed,
+}: CommentListItemProps) => {
+  const [showReplies, setShowReplies] = useState<boolean>(false);
+
   return (
     <View
       style={{
@@ -17,6 +26,7 @@ const CommentListItem = ({ comment }: CommentListItemProps) => {
         paddingVertical: 5,
         gap: 10,
         borderLeftColor: "#E5E7EB",
+        borderLeftWidth: depth > 0 ? 1 : 0,
       }}
     >
       {/* User Info */}
@@ -55,7 +65,7 @@ const CommentListItem = ({ comment }: CommentListItemProps) => {
           name="reply"
           size={16}
           color="#737373"
-          onPress={() => console.log("Reply button pressed")}
+          onPress={() => handleReplyButtonPressed(comment.id)}
         />
         <MaterialCommunityIcons
           name="trophy-outline"
@@ -79,8 +89,10 @@ const CommentListItem = ({ comment }: CommentListItemProps) => {
         </View>
       </View>
 
-      {comment.replies.length && (
+      {/* Show Replies Button */}
+      {!!comment.replies.length && !showReplies && depth < 5 && (
         <Pressable
+          onPress={() => setShowReplies(true)}
           style={{
             backgroundColor: "#EDEDED",
             borderRadius: 2,
@@ -100,8 +112,19 @@ const CommentListItem = ({ comment }: CommentListItemProps) => {
           </Text>
         </Pressable>
       )}
+
+      {/* Replies */}
+      {showReplies &&
+        comment.replies.map((reply) => (
+          <CommentListItem
+            key={reply.id}
+            comment={reply}
+            depth={depth + 1}
+            handleReplyButtonPressed={handleReplyButtonPressed}
+          />
+        ))}
     </View>
   );
 };
 
-export default CommentListItem;
+export default memo(CommentListItem);
