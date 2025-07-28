@@ -2,7 +2,12 @@ import { FlatList, View } from "react-native";
 import PostListItem from "../../../components/post-list-item";
 import { supabase } from "../../../lib/supabase";
 import { useEffect, useState } from "react";
-import { Post } from "../../../types";
+import { Tables } from "../../../types/database.types";
+
+type Post = Tables<"posts"> & {
+  group: Tables<"groups">;
+  user: Tables<"users">;
+};
 
 export default function HomeScreen() {
   const [posts, setPosts] = useState<Post[]>([]);
