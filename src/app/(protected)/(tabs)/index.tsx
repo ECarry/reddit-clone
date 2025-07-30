@@ -1,7 +1,6 @@
 import { ActivityIndicator, FlatList, Text, View } from "react-native";
 import PostListItem from "../../../components/post-list-item";
 import { supabase } from "../../../lib/supabase";
-import { useEffect, useState } from "react";
 import { Tables } from "../../../types/database.types";
 import { useQuery } from "@tanstack/react-query";
 

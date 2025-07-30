@@ -1,8 +1,13 @@
 import { Image, Pressable, Text, View, StyleSheet } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { Post } from "../types";
 import { formatDistanceToNowStrict } from "date-fns";
 import { Link } from "expo-router";
+import { Tables } from "../types/database.types";
+
+type Post = Tables<"posts"> & {
+  group: Tables<"groups">;
+  user: Tables<"users">;
+};
 
 type PostListItemProps = {
   post: Post;
@@ -14,8 +19,8 @@ export default function PostListItem({
   isDetailedPost,
 }: PostListItemProps) {
   return (
-    <Link href={`/post/${post.id}`}>
-      <View
+    <Link href={`/post/${post.id}`} asChild>
+      <Pressable
         style={{
           paddingHorizontal: 15,
           paddingVertical: 10,
@@ -23,13 +28,12 @@ export default function PostListItem({
           borderBottomColor: "lightgrey",
           borderBottomWidth: 0.5,
           backgroundColor: "white",
-          width: "100%",
         }}
       >
         {/* HEADER */}
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <Image
-            source={{ uri: post.group.image }}
+            source={{ uri: post.group.image || "" }}
             style={{ width: 20, height: 20, borderRadius: 10, marginRight: 5 }}
           />
           <View>
@@ -42,7 +46,7 @@ export default function PostListItem({
               <Text
                 style={{ color: "grey", fontSize: 13, alignSelf: "flex-start" }}
               >
-                {formatDistanceToNowStrict(new Date(post.created_at))}
+                {formatDistanceToNowStrict(new Date(post.created_at || ""))}
               </Text>
             </View>
             {isDetailedPost && (
@@ -155,7 +159,7 @@ export default function PostListItem({
             />
           </View>
         </View>
-      </View>
+      </Pressable>
     </Link>
   );
 }
