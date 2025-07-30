@@ -7,30 +7,38 @@ import {
   Pressable,
   KeyboardAvoidingView,
   Platform,
+  ActivityIndicator,
 } from "react-native";
-import posts from "../../../../assets/data/posts.json";
 import comments from "../../../../assets/data/comments.json";
 import PostListItem from "../../../components/post-list-item";
 import CommentListItem from "../../../components/comment-list-item";
 import { useState, useRef, useCallback } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { fetchPostById } from "../../../services/post-service";
+import { useQuery } from "@tanstack/react-query";
 
 export default function PostDetailScreen() {
-  const { id } = useLocalSearchParams();
-  const [comment, setComment] = useState<string>("");
+  const { id } = useLocalSearchParams<{ id: string }>();
+
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["post", id],
+    queryFn: () => fetchPostById(id),
+  });
+
+  if (isLoading) return <ActivityIndicator />;
+
+  if (isError || !data) return <Text>Error fetching post</Text>;
+
   const [inputFocus, setInputFocus] = useState<boolean>(false);
   const inputRef = useRef<TextInput | null>(null);
 
   const insets = useSafeAreaInsets();
-  const detailedPost = posts.find((post) => post.id === id);
   const detailedComments = comments.filter((comment) => comment.post_id === id);
 
   const handleReplyButtonPressed = useCallback((commentId: string) => {
     console.log(commentId);
     inputRef.current?.focus();
   }, []);
-
-  if (!detailedPost) return <Text>Post not found!</Text>;
 
   return (
     <KeyboardAvoidingView
@@ -47,11 +55,9 @@ export default function PostDetailScreen() {
             handleReplyButtonPressed={handleReplyButtonPressed}
           />
         )}
-        ListHeaderComponent={
-          <PostListItem post={detailedPost} isDetailedPost />
-        }
+        ListHeaderComponent={<PostListItem post={data} isDetailedPost />}
       />
-      <View
+      {/* <View
         style={{
           paddingBottom: insets.bottom,
           padding: 10,
@@ -99,7 +105,7 @@ export default function PostDetailScreen() {
             <Text style={{ color: "white" }}>Reply</Text>
           </Pressable>
         )}
-      </View>
+      </View> */}
     </KeyboardAvoidingView>
   );
 }

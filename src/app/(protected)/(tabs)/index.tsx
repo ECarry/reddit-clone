@@ -1,25 +1,7 @@
 import { ActivityIndicator, FlatList, Text, View } from "react-native";
 import PostListItem from "../../../components/post-list-item";
-import { supabase } from "../../../lib/supabase";
-import { Tables } from "../../../types/database.types";
 import { useQuery } from "@tanstack/react-query";
-
-type Post = Tables<"posts"> & {
-  group: Tables<"groups">;
-  user: Tables<"users">;
-};
-
-const fetchPosts = async () => {
-  const { data, error } = await supabase
-    .from("posts")
-    .select("*, group:groups(*), user:users!posts_user_id_fkey(*)");
-
-  if (error) {
-    console.error(error);
-  } else {
-    return data;
-  }
-};
+import { fetchPosts } from "../../../services/post-service";
 
 export default function HomeScreen() {
   const {
