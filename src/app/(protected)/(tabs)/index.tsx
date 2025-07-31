@@ -8,6 +8,8 @@ export default function HomeScreen() {
     data: posts,
     isLoading,
     isError,
+    refetch,
+    isRefetching,
   } = useQuery({
     queryKey: ["posts"],
     queryFn: fetchPosts,
@@ -23,6 +25,8 @@ export default function HomeScreen() {
         data={posts}
         renderItem={({ item }) => <PostListItem post={item} />}
         keyExtractor={(item) => item.id}
+        onRefresh={refetch}
+        refreshing={isRefetching}
       />
     </View>
   );
