@@ -13,9 +13,11 @@ import { router } from "expo-router";
 import React from "react";
 import { selectedGroupAtom } from "../../atoms";
 import { useSetAtom } from "jotai";
-import { Group } from "../../types";
 import { useQuery } from "@tanstack/react-query";
 import { fetchGroups } from "../../services/group-service";
+import { Tables } from "../../types/database.types";
+
+type Group = Tables<"groups">;
 
 export default function GroupSelector() {
   const [search, setSearch] = React.useState<string>("");
@@ -98,7 +100,7 @@ export default function GroupSelector() {
             }}
           >
             <Image
-              source={{ uri: item.image }}
+              source={{ uri: item.image || "" }}
               style={{ width: 40, aspectRatio: 1, borderRadius: 20 }}
             />
             <Text style={{ fontWeight: "600" }}>{item.name}</Text>

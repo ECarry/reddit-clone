@@ -1,4 +1,4 @@
 import { atom } from "jotai";
-import { Group } from "./types";
+import { Tables } from "./types/database.types";
 
-export const selectedGroupAtom = atom<Group | null>(null);
+export const selectedGroupAtom = atom<Tables<"groups"> | null>(null);
