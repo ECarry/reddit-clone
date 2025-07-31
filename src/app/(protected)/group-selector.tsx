@@ -5,23 +5,32 @@ import {
   FlatList,
   Pressable,
   Image,
+  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AntDesign } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React from "react";
-import groups from "../../../assets/data/groups.json";
 import { selectedGroupAtom } from "../../atoms";
 import { useSetAtom } from "jotai";
 import { Group } from "../../types";
+import { useQuery } from "@tanstack/react-query";
+import { fetchGroups } from "../../services/group-service";
 
 export default function GroupSelector() {
   const [search, setSearch] = React.useState<string>("");
   const setGroup = useSetAtom(selectedGroupAtom);
 
-  const filteredGroups = groups.filter((group) =>
-    group.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["groups", { search }],
+    queryFn: () => fetchGroups(search),
+    staleTime: 10_000,
+    placeholderData: (prevData) => prevData,
+  });
+
+  if (isLoading) return <ActivityIndicator />;
+
+  if (isError || !data) return <Text>Error fetching groups</Text>;
 
   const onGroupSelected = (group: Group) => {
     setGroup(group);
@@ -74,7 +83,7 @@ export default function GroupSelector() {
       </View>
 
       <FlatList
-        data={filteredGroups}
+        data={data}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <Pressable
